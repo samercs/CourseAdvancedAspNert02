@@ -17,9 +17,15 @@ public class CustomExceptionHandling : IExceptionHandler
             Instance = httpContext.Request.Path
         };
         problemDetail.Extensions.Add("RequestId", httpContext.TraceIdentifier);
-        if (exception is ValidationException validationException)
+        if (exception.InnerException is ValidationException validationException)
         {
             problemDetail.Extensions.Add("ValidationErrors", validationException.Errors);
+        }
+
+        if (exception is NotFoundException notFoundException)
+        {
+            problemDetail.Status = StatusCodes.Status404NotFound;
+            httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
         }
         httpContext.Response.WriteAsJsonAsync(problemDetail);
         return true;

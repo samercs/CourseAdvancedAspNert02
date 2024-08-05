@@ -1,6 +1,8 @@
-﻿using System.Linq.Expressions;
+﻿using System.Globalization;
+using System.Linq.Expressions;
 using Mapster;
 using ToDoApp.Application.Dtos;
+using ToDoApp.Application.Exceptions;
 using ToDoApp.Application.Interfaces;
 using ToDoApp.Domain.Entity;
 
@@ -42,6 +44,10 @@ public class ToDoService
     public ToDoItemDto GetById(int id)
     {
         var todoItem = _repositry.GetById(id);
+        if (todoItem  is {Title: "samer"})
+        {
+            throw new NotFoundException("ToDoItem", id);
+        }
         return todoItem.Adapt<ToDoItemDto>();
     }
 

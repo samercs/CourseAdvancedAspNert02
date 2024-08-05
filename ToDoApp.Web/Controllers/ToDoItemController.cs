@@ -33,14 +33,10 @@ namespace ToDoApp.Web.Controllers
         }
 
         [HttpGet("{id:int}")]
-        public IActionResult GetById([FromBody]int id)
+        public IActionResult GetById(int id)
         {
             var item = _service.GetById(id);
-            if (item is null)
-            {
-                return NotFound();
-            }
-            return Ok(_service.GetById(id));
+            return Ok(item);
         }
 
         [HttpPost]
