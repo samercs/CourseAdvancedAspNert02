@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ToDoApp.Application.CQRS.Commands;
 using ToDoApp.Application.CQRS.Queries;
 using ToDoApp.Application.Dtos;
 using ToDoApp.Application.Services;
@@ -47,6 +48,13 @@ namespace ToDoApp.Web.Controllers
         {
             _service.Create(item);
             return Ok();
+        }
+
+        [HttpPost("add-command")]
+        public IActionResult PostCommand(AddToDoItemCommand command)
+        {
+            var result =_sender.Send(command).Result;
+            return Ok(result);
         }
 
         [HttpPut("{id:int}")]

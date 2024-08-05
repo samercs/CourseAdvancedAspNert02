@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using ToDoApp.Application.CQRS.Queries;
 using ToDoApp.Application.Dtos;
+using ToDoApp.Application.Exceptions;
 using ToDoApp.Application.Interfaces;
 using ToDoApp.Application.Mapping;
 using ToDoApp.Application.Services;
@@ -34,6 +35,7 @@ namespace ToDoApp.Web
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             TypeAdapterConfig.GlobalSettings.Scan(typeof(ToDoItemMapping).Assembly);
+            builder.Services.AddExceptionHandler<CustomExceptionHandling>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -46,10 +48,8 @@ namespace ToDoApp.Web
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
-
             app.MapControllers();
-
+            app.UseExceptionHandler(i => { });
             app.Run();
         }
     }
