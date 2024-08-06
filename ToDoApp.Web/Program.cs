@@ -1,4 +1,7 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 
 namespace ToDoApp.Web;
 
@@ -26,6 +29,24 @@ public class Program
         builder.Services.AddIdentity<IdentityUser, IdentityRole>()
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
+
+        builder.Services.AddAuthentication(i =>
+            {
+                i.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                i.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                i.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(i =>
+            {
+                i.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidIssuer = "ToDoApp",
+                    ValidAudience = "ToDoApp",
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(builder.Configuration.GetSection("JWTSecret").Value)),
+                    ValidateIssuerSigningKey = true,
+                };
+            });
 
         builder.Services.AddMediatR(c =>
         {

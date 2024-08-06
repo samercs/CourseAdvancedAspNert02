@@ -19,5 +19,17 @@ namespace ToDoApp.Web.Controllers
 
             return BadRequest();
         }
+
+        [HttpPost("login")]
+        public IActionResult Login(LoginDto dto)
+        {
+            var result = authService.Login(dto);
+            if (result.IsSuccess)
+            {
+                return Ok();
+            }
+
+            return BadRequest();
+        }
     }
 }

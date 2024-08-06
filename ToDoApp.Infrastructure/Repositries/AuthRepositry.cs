@@ -1,10 +1,15 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using ToDoApp.Application.Dtos;
 using ToDoApp.Application.Interfaces;
 
 namespace ToDoApp.Infrastructure.Repositries;
 
-public class AuthRepositry(UserManager<IdentityUser> userManager):IAuthRepositry
+public class AuthRepositry(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager):IAuthRepositry
 {
     public bool Register(RegisterDto dto)
     {
@@ -25,6 +30,50 @@ public class AuthRepositry(UserManager<IdentityUser> userManager):IAuthRepositry
 
     public LoginResponseDto Login(LoginDto dto)
     {
-        throw new NotImplementedException();
+        var user = userManager.FindByNameAsync(dto.UserName).Result;
+        if (user is null)
+        {
+            return new LoginResponseDto()
+            {
+                IsSuccess = false
+            };
+        }
+
+        var loginResult = signInManager.PasswordSignInAsync(user, dto.Password, true, true).Result;
+        if(loginResult.Succeeded)
+        {
+            return new LoginResponseDto()
+            {
+                IsSuccess = true,
+                UserId = user.Id,
+                Token = GenerateToken(user)
+            };
+        }
+        return new LoginResponseDto()
+        {
+            IsSuccess = false
+        };
+    }
+
+    private string GenerateToken(IdentityUser user)
+    {
+        var key = Encoding.ASCII.GetBytes(configuration.GetSection("JWTSecret").Value);
+        var clams = new List<Claim>()
+        {
+            new Claim("Id", user.Id),
+            new Claim("Email", user.Email)
+        };
+
+        var jwtTokenDescriper = new SecurityTokenDescriptor()
+        {
+            Audience = "ToDoApp",
+            Issuer = "ToDoApp",
+            Subject = new ClaimsIdentity(clams),
+            Expires = DateTime.Now.AddDays(7),
+            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+        };
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var token = tokenHandler.CreateToken(jwtTokenDescriper);
+        return tokenHandler.WriteToken(token);
     }
 }
