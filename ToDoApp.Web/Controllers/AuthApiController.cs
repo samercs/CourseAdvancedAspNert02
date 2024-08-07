@@ -26,7 +26,7 @@ namespace ToDoApp.Web.Controllers
             var result = authService.Login(dto);
             if (result.IsSuccess)
             {
-                return Ok();
+                return Ok(result);
             }
 
             return BadRequest();

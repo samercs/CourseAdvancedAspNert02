@@ -2,6 +2,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using ToDoApp.Domain.Entity;
 
 namespace ToDoApp.Web;
 
@@ -26,7 +27,7 @@ public class Program
             options.Password.RequiredLength = 8;
 
         });
-        builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+        builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
 

@@ -6,18 +6,22 @@ using System.Security.Claims;
 using System.Text;
 using ToDoApp.Application.Dtos;
 using ToDoApp.Application.Interfaces;
+using ToDoApp.Domain.Entity;
 
 namespace ToDoApp.Infrastructure.Repositries;
 
-public class AuthRepositry(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager):IAuthRepositry
+public class AuthRepositry(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IConfiguration configuration):IAuthRepositry
 {
     public bool Register(RegisterDto dto)
     {
-        var user = new IdentityUser()
+        var user = new ApplicationUser()
         {
             UserName = dto.UserName,
             Email = dto.Email,
-            PhoneNumber = dto.PhoneNumber
+            PhoneNumber = dto.PhoneNumber,
+            Gender = dto.Gender,
+            BirthDate = dto.BirthDate,
+            FullName = dto.FullName
         };
         var result = userManager.CreateAsync(user, dto.Password).Result;
         if (result.Succeeded)
@@ -55,14 +59,19 @@ public class AuthRepositry(UserManager<IdentityUser> userManager, SignInManager<
         };
     }
 
-    private string GenerateToken(IdentityUser user)
+    private string GenerateToken(ApplicationUser user)
     {
         var key = Encoding.ASCII.GetBytes(configuration.GetSection("JWTSecret").Value);
+        var roles = userManager.GetRolesAsync(user).Result;
         var clams = new List<Claim>()
         {
             new Claim("Id", user.Id),
             new Claim("Email", user.Email)
         };
+        foreach (var role in roles)
+        {
+            clams.Add(new Claim(ClaimTypes.Role, role));
+        }
 
         var jwtTokenDescriper = new SecurityTokenDescriptor()
         {

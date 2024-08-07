@@ -19,7 +19,7 @@ public class ToDoService
 
     public List<ToDoItemDto> GetAll()
     {
-        var result = _repositry.GetAll(new Expression<Func<ToDoItem, bool>>[] {i=>i.Title.Equals("Samer")}, item => item.Category);
+        var result = _repositry.GetAll(null, item => item.Category);
         //var mappedResult = result.Select(todoItem => new ToDoItemDto()
         //{
         //    Description = todoItem.Description,

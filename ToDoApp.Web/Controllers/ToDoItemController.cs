@@ -1,5 +1,9 @@
-﻿using MediatR;
+﻿using System.Net;
+using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ToDoApp.Application.CQRS.Commands;
 using ToDoApp.Application.CQRS.Queries;
@@ -11,10 +15,10 @@ namespace ToDoApp.Web.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ToDoItemController(ToDoService _service, ISender _sender) : ControllerBase
+    public class ToDoItemController(ToDoService _service, ISender _sender, UserManager<ApplicationUser> userManager) : ControllerBase
     {
-        
 
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public IActionResult Get()
         {
