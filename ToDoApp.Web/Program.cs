@@ -55,8 +55,10 @@ public class Program
         });
         builder.Services.AddScoped<IToDoRepositry, ToDoItemRepositry>();
         builder.Services.AddScoped<IAuthRepositry, AuthRepositry>();
+        builder.Services.AddScoped<IRoleRepositry, RoleRepositry>();
         builder.Services.AddScoped<ToDoService>();
         builder.Services.AddScoped<AuthService>();
+        builder.Services.AddScoped<RoleService>();
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();

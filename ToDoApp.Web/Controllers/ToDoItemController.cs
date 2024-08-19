@@ -18,7 +18,7 @@ namespace ToDoApp.Web.Controllers
     public class ToDoItemController(ToDoService _service, ISender _sender, UserManager<ApplicationUser> userManager) : ControllerBase
     {
 
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         [HttpGet]
         public IActionResult Get()
         {
