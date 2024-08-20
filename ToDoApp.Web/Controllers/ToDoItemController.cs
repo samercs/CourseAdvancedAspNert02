@@ -18,7 +18,7 @@ namespace ToDoApp.Web.Controllers
     public class ToDoItemController(ToDoService _service, ISender _sender, UserManager<ApplicationUser> userManager) : ControllerBase
     {
 
-        [Authorize]
+        //[Authorize]
         [HttpGet]
         public IActionResult Get()
         {
@@ -81,6 +81,13 @@ namespace ToDoApp.Web.Controllers
         {
             var result = _service.UpdateComplete(dto);
             return Ok(result);
+        }
+
+        [HttpDelete("{id:int}")]
+        public IActionResult Delete(int id)
+        {
+            var result =_service.Delete(id);
+            return Ok();
         }
 
         [HttpGet("test")]

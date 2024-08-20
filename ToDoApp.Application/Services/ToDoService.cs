@@ -66,4 +66,9 @@ public class ToDoService
         return _repositry.UpdateComplete(dto.Id, dto.Status);
     }
 
+    public bool Delete(int id)
+    {
+        _repositry.Delete(id);
+        return true;
+    }
 }
